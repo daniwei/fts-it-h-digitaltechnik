@@ -1,0 +1,1118 @@
+<!DOCTYPE html><html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digitaltechnik interaktiv – Dualzahlen, Addition und 2er-Komplement</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1d2433;
+      --muted: #5f6b85;
+      --accent: #1f6feb;
+      --accent-soft: #e8f1ff;
+      --good: #117a37;
+      --good-soft: #e7f8ed;
+      --warn: #b25b00;
+      --warn-soft: #fff3e5;
+      --bad: #b42318;
+      --bad-soft: #feeceb;
+      --border: #d9e1ef;
+      --shadow: 0 10px 30px rgba(19, 37, 71, 0.08);
+      --radius: 18px;
+    }* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text);
+  background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 220px);
+  line-height: 1.55;
+}
+
+header {
+  padding: 32px 18px 24px;
+}
+
+.hero {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #1f6feb 0%, #4b8cff 100%);
+  color: white;
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+}
+
+.hero h1 {
+  margin: 0 0 12px;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1.1;
+}
+
+.hero p {
+  margin: 8px 0;
+  max-width: 850px;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.hero-chip {
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.progress-wrap {
+  margin-top: 18px;
+  background: rgba(255,255,255,0.16);
+  border-radius: 999px;
+  padding: 6px;
+}
+
+.progress-bar {
+  height: 14px;
+  background: rgba(255,255,255,0.92);
+  border-radius: 999px;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  margin-top: 8px;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(244, 247, 251, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.nav-inner a {
+  text-decoration: none;
+  color: var(--accent);
+  background: white;
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 18px 60px;
+}
+
+section {
+  margin-bottom: 28px;
+  scroll-margin-top: 90px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+
+.section-title {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+}
+
+.muted { color: var(--muted); }
+
+.grid-2, .grid-3 {
+  display: grid;
+  gap: 18px;
+}
+
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+.callout {
+  border-left: 5px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 14px 16px;
+  border-radius: 14px;
+  margin: 14px 0;
+}
+
+.mini-good, .mini-warn, .mini-bad {
+  padding: 12px 14px;
+  border-radius: 14px;
+  margin-top: 12px;
+  border: 1px solid transparent;
+}
+
+.mini-good { background: var(--good-soft); border-color: #b7ebc5; }
+.mini-warn { background: var(--warn-soft); border-color: #f0d3a6; }
+.mini-bad { background: var(--bad-soft); border-color: #f5b8b2; }
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+input, select, button, textarea {
+  font: inherit;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid #bcc8de;
+  background: white;
+  color: var(--text);
+}
+
+textarea { min-height: 90px; resize: vertical; }
+
+button {
+  border: none;
+  border-radius: 12px;
+  padding: 11px 16px;
+  cursor: pointer;
+  background: var(--accent);
+  color: white;
+  font-weight: bold;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+  margin-right: 8px;
+  margin-top: 8px;
+}
+
+button:hover { transform: translateY(-1px); }
+button.secondary {
+  background: white;
+  color: var(--accent);
+  border: 1px solid var(--border);
+}
+
+.result-box {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f8fbff;
+  border: 1px solid var(--border);
+}
+
+.bit-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 0;
+}
+
+.bit {
+  min-width: 42px;
+  text-align: center;
+  padding: 10px 8px;
+  border-radius: 12px;
+  background: #eef3ff;
+  border: 1px solid #cad8fb;
+  font-weight: bold;
+}
+
+.bit.on {
+  background: #d8e7ff;
+  border-color: #8ab1ff;
+}
+
+.equation {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  background: #0f172a;
+  color: #e5eefc;
+  padding: 14px;
+  border-radius: 14px;
+  overflow-x: auto;
+}
+
+.steps {
+  padding-left: 18px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: white;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+th, td {
+  border: 1px solid var(--border);
+  padding: 10px 8px;
+  text-align: center;
+}
+
+th {
+  background: #edf3ff;
+}
+
+.pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #edf3ff;
+  color: var(--accent);
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
+
+.two-col-text {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.task-box {
+  border: 1px dashed #9eb7ea;
+  border-radius: 16px;
+  padding: 16px;
+  background: #f8fbff;
+}
+
+.footer-note {
+  margin-top: 30px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.kbd {
+  font-family: "Courier New", monospace;
+  background: #eef2f7;
+  border: 1px solid #d8e0ea;
+  border-bottom-width: 3px;
+  padding: 2px 7px;
+  border-radius: 8px;
+}
+
+@media (max-width: 700px) {
+  .hero, .card { padding: 18px; }
+  .nav-inner { padding: 10px 12px; }
+  main { padding: 18px 12px 40px; }
+  .bit { min-width: 34px; }
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hero">
+      <h1>Digitaltechnik interaktiv</h1>
+      <p><strong>Thema:</strong> Dualzahlen, binäre Addition und 2er-Komplement</p>
+      <p><strong>Zielgruppe:</strong> Technisches Gymnasium, Eingangsklasse</p>
+      <p><strong>Lernziel:</strong> Nach dem Durcharbeiten sollst du nicht nur bekannte Aufgaben lösen, sondern die Verfahren sicher auf neue Probleme übertragen können.</p>
+      <div class="hero-grid">
+        <div class="hero-chip"><strong>1.</strong> Dualzahlen lesen und bilden</div>
+        <div class="hero-chip"><strong>2.</strong> Binär addieren und Überträge verstehen</div>
+        <div class="hero-chip"><strong>3.</strong> Negative Zahlen im 2er-Komplement darstellen</div>
+        <div class="hero-chip"><strong>4.</strong> Neue Aufgaben selbstständig lösen</div>
+      </div>
+      <div class="progress-wrap">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+      <div id="progressText" class="progress-text">Fortschritt: 0 von 8 Übungen erledigt</div>
+    </div>
+  </header>  <nav>
+    <div class="nav-inner">
+      <a href="#start">Start</a>
+      <a href="#dualzahlen">Dualzahlen</a>
+      <a href="#addition">Addition</a>
+      <a href="#komplement">2er-Komplement</a>
+      <a href="#transfer">Transfer</a>
+      <a href="#abschluss">Abschlusscheck</a>
+    </div>
+  </nav>  <main>
+    <section id="start">
+      <div class="card">
+        <h2 class="section-title">So arbeitest du mit der Seite</h2>
+        <div class="grid-3">
+          <div>
+            <span class="pill">Verstehen</span>
+            <p>Jedes Thema startet mit einer knappen Erklärung und einem klaren Verfahren.</p>
+          </div>
+          <div>
+            <span class="pill">Ausprobieren</span>
+            <p>Danach testest du das Verfahren direkt an interaktiven Beispielen.</p>
+          </div>
+          <div>
+            <span class="pill">Anwenden</span>
+            <p>Zum Schluss bearbeitest du neue Aufgaben ohne Vorlage.</p>
+          </div>
+        </div>
+        <div class="callout">
+          <strong>Merke:</strong> In der Digitaltechnik reicht Auswendiglernen nicht. Entscheidend ist, dass du ein festes Verfahren beherrschst und Schritt für Schritt anwendest.
+        </div>
+      </div>
+    </section><section id="dualzahlen">
+  <div class="card">
+    <h2 class="section-title">1. Dualzahlen verstehen</h2>
+    <div class="two-col-text">
+      <div>
+        <p>Im Dezimalsystem hat jede Stelle eine Wertigkeit von <strong>Potenzen zur Basis 10</strong>. Im Dualsystem ist die Basis <strong>2</strong>. Deshalb gibt es nur die Ziffern <strong>0</strong> und <strong>1</strong>.</p>
+        <p>Von rechts nach links haben die Stellen die Wertigkeiten:</p>
+        <p><span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">4</span> <span class="kbd">8</span> <span class="kbd">16</span> <span class="kbd">32</span> ...</p>
+      </div>
+      <div>
+        <div class="mini-good">
+          <strong>Beispiel:</strong><br />
+          <span class="kbd">10110₂</span> = 1·16 + 0·8 + 1·4 + 1·2 + 0·1 = <strong>22₁₀</strong>
+        </div>
+        <div class="mini-warn">
+          <strong>Typischer Fehler:</strong><br />
+          Dualzahlen nicht als Stellenwertsystem lesen, sondern Ziffer für Ziffer übernehmen.
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top: 20px;">
+      <div class="task-box">
+        <h3>Von Dezimal nach Dual</h3>
+        <label for="decInput">Dezimalzahl (0 bis 255)</label>
+        <input id="decInput" type="number" min="0" max="255" value="22" />
+        <button onclick="convertDecimalToBinary()">Umrechnen</button>
+        <div id="decResult" class="result-box"></div>
+      </div>
+
+      <div class="task-box">
+        <h3>Von Dual nach Dezimal</h3>
+        <label for="binInput">Dualzahl</label>
+        <input id="binInput" type="text" value="10110" placeholder="z. B. 10110" />
+        <button onclick="convertBinaryToDecimal()">Auswerten</button>
+        <div id="binResult" class="result-box"></div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top: 20px;">
+      <div class="task-box">
+        <h3>Übung A</h3>
+        <p id="exerciseDecToBin"></p>
+        <label for="exerciseDecAnswer">Deine Lösung</label>
+        <input id="exerciseDecAnswer" type="text" placeholder="Dualzahl eingeben" />
+        <button onclick="checkDecToBin()">Prüfen</button>
+        <button class="secondary" onclick="newDecToBinExercise()">Neue Aufgabe</button>
+        <div id="exerciseDecFeedback" class="result-box"></div>
+      </div>
+
+      <div class="task-box">
+        <h3>Übung B</h3>
+        <p id="exerciseBinToDec"></p>
+        <label for="exerciseBinAnswer">Deine Lösung</label>
+        <input id="exerciseBinAnswer" type="number" placeholder="Dezimalzahl eingeben" />
+        <button onclick="checkBinToDec()">Prüfen</button>
+        <button class="secondary" onclick="newBinToDecExercise()">Neue Aufgabe</button>
+        <div id="exerciseBinFeedback" class="result-box"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="addition">
+  <div class="card">
+    <h2 class="section-title">2. Binäre Addition</h2>
+    <p>Die Regeln sind dieselben wie im Dezimalsystem: <strong>von rechts nach links</strong> arbeiten und Überträge berücksichtigen.</p>
+    <div class="grid-2">
+      <div>
+        <table>
+          <thead>
+            <tr><th>a</th><th>b</th><th>Ergebnis</th><th>Übertrag</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+            <tr><td>0</td><td>1</td><td>1</td><td>0</td></tr>
+            <tr><td>1</td><td>0</td><td>1</td><td>0</td></tr>
+            <tr><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="mini-good">
+          <strong>Wichtig:</strong> 1 + 1 ist im Dualsystem nicht 2, sondern <span class="kbd">10₂</span>. Das heißt: Ergebnisbit 0, Übertrag 1.
+        </div>
+        <div class="mini-warn">
+          <strong>Typischer Fehler:</strong> Den Übertrag in der nächsten Stelle vergessen.
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top: 20px;">
+      <div class="task-box">
+        <h3>Additionsrechner</h3>
+        <label for="addA">1. Summand (Dualzahl)</label>
+        <input id="addA" type="text" value="0101" />
+        <label for="addB" style="margin-top: 12px;">2. Summand (Dualzahl)</label>
+        <input id="addB" type="text" value="0011" />
+        <button onclick="calculateAddition()">Addieren</button>
+        <div id="addResult" class="result-box"></div>
+      </div>
+
+      <div class="task-box">
+        <h3>Schritt-für-Schritt-Analyse</h3>
+        <div id="additionSteps" class="result-box">Hier erscheint nach der Berechnung eine Tabelle mit allen Überträgen.</div>
+      </div>
+    </div>
+
+    <div class="task-box" style="margin-top: 20px;">
+      <h3>Übung C</h3>
+      <p id="exerciseAddText"></p>
+      <label for="exerciseAddAnswer">Dein Ergebnis als Dualzahl</label>
+      <input id="exerciseAddAnswer" type="text" placeholder="z. B. 10110" />
+      <button onclick="checkAdditionExercise()">Prüfen</button>
+      <button class="secondary" onclick="newAdditionExercise()">Neue Aufgabe</button>
+      <div id="exerciseAddFeedback" class="result-box"></div>
+    </div>
+  </div>
+</section>
+
+<section id="komplement">
+  <div class="card">
+    <h2 class="section-title">3. 2er-Komplement</h2>
+    <p>Mit dem 2er-Komplement können in einem festen Bitmuster <strong>positive und negative Zahlen</strong> dargestellt werden. Das ist in der Digitaltechnik Standard.</p>
+    <div class="grid-2">
+      <div>
+        <div class="callout">
+          <strong>Verfahren für negative Zahlen:</strong>
+          <ol class="steps">
+            <li>Bilde die positive Zahl in Binärdarstellung.</li>
+            <li>Invertiere alle Bits.</li>
+            <li>Addiere 1.</li>
+          </ol>
+        </div>
+      </div>
+      <div>
+        <div class="mini-good">
+          <strong>Beispiel für -5 im 8-Bit-System:</strong><br />
+          +5 = <span class="kbd">00000101</span><br />
+          invertiert = <span class="kbd">11111010</span><br />
+          +1 = <span class="kbd">11111011</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top: 20px;">
+      <div class="task-box">
+        <h3>Dezimalzahl ins 2er-Komplement umwandeln</h3>
+        <label for="twosBits">Bitbreite</label>
+        <select id="twosBits">
+          <option value="4">4 Bit</option>
+          <option value="8" selected>8 Bit</option>
+        </select>
+        <label for="twosDec" style="margin-top: 12px;">Dezimalzahl</label>
+        <input id="twosDec" type="number" value="-5" />
+        <button onclick="convertDecimalToTwos()">Umrechnen</button>
+        <div id="twosDecResult" class="result-box"></div>
+      </div>
+
+      <div class="task-box">
+        <h3>2er-Komplement lesen</h3>
+        <label for="twosBinBits">Bitbreite</label>
+        <select id="twosBinBits">
+          <option value="4">4 Bit</option>
+          <option value="8" selected>8 Bit</option>
+        </select>
+        <label for="twosBin" style="margin-top: 12px;">Bitmuster</label>
+        <input id="twosBin" type="text" value="11111011" />
+        <button onclick="convertTwosToDecimal()">Auswerten</button>
+        <div id="twosBinResult" class="result-box"></div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top: 20px;">
+      <div class="task-box">
+        <h3>Übung D</h3>
+        <p id="exerciseTwosEncodeText"></p>
+        <label for="exerciseTwosEncodeAnswer">Deine Lösung</label>
+        <input id="exerciseTwosEncodeAnswer" type="text" placeholder="Bitmuster eingeben" />
+        <button onclick="checkTwosEncode()">Prüfen</button>
+        <button class="secondary" onclick="newTwosEncodeExercise()">Neue Aufgabe</button>
+        <div id="exerciseTwosEncodeFeedback" class="result-box"></div>
+      </div>
+
+      <div class="task-box">
+        <h3>Übung E</h3>
+        <p id="exerciseTwosDecodeText"></p>
+        <label for="exerciseTwosDecodeAnswer">Deine Lösung</label>
+        <input id="exerciseTwosDecodeAnswer" type="number" placeholder="Dezimalzahl eingeben" />
+        <button onclick="checkTwosDecode()">Prüfen</button>
+        <button class="secondary" onclick="newTwosDecodeExercise()">Neue Aufgabe</button>
+        <div id="exerciseTwosDecodeFeedback" class="result-box"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="transfer">
+  <div class="card">
+    <h2 class="section-title">4. Transfer: Neue Probleme lösen</h2>
+    <p>Jetzt wird es ernst. Hier bekommst du Aufgaben, die nicht nur reines Wiederholen sind. Entscheidend ist, dass du das passende Verfahren auswählst.</p>
+    <div class="task-box">
+      <h3>Transferaufgabe</h3>
+      <p id="transferTaskText"></p>
+      <label for="transferAnswer">Deine Lösung</label>
+      <input id="transferAnswer" type="text" placeholder="Antwort eingeben" />
+      <button onclick="checkTransferTask()">Prüfen</button>
+      <button class="secondary" onclick="newTransferTask()">Neue Aufgabe</button>
+      <div id="transferFeedback" class="result-box"></div>
+    </div>
+
+    <div class="grid-3" style="margin-top: 20px;">
+      <div class="mini-good">
+        <strong>Frage 1:</strong><br />
+        Muss ich umrechnen, addieren oder ein 2er-Komplement bilden?
+      </div>
+      <div class="mini-good">
+        <strong>Frage 2:</strong><br />
+        Arbeite ich mit festen Bits, zum Beispiel 4 oder 8 Bit?
+      </div>
+      <div class="mini-good">
+        <strong>Frage 3:</strong><br />
+        Ist das Ergebnis fachlich plausibel?
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="abschluss">
+  <div class="card">
+    <h2 class="section-title">Abschlusscheck</h2>
+    <p>Beantworte die drei Aussagen. Ziel ist nicht Raten, sondern sauberes Begründen.</p>
+    <div class="grid-3">
+      <div class="task-box">
+        <p><strong>1.</strong> Warum kann das Bitmuster <span class="kbd">1111</span> je nach Kontext unterschiedliche Bedeutungen haben?</p>
+        <textarea id="finalQ1" placeholder="Begründung eingeben"></textarea>
+      </div>
+      <div class="task-box">
+        <p><strong>2.</strong> Woran erkennst du bei einer Binäraddition, dass ein Übertrag nötig ist?</p>
+        <textarea id="finalQ2" placeholder="Begründung eingeben"></textarea>
+      </div>
+      <div class="task-box">
+        <p><strong>3.</strong> Warum ist das 2er-Komplement für Rechner praktisch?</p>
+        <textarea id="finalQ3" placeholder="Begründung eingeben"></textarea>
+      </div>
+    </div>
+    <button onclick="evaluateFinalReflection()">Selbstcheck anzeigen</button>
+    <div id="finalReflection" class="result-box"></div>
+  </div>
+</section>
+
+<div class="footer-note">
+  Interaktive Lernseite für den Unterricht in der Eingangsklasse eines Technischen Gymnasiums.
+</div>
+
+  </main>  <script>
+    const solved = new Set();
+    let currentDecToBin = 0;
+    let currentBinToDec = "0";
+    let currentAddA = "0";
+    let currentAddB = "0";
+    let currentTwosEncode = { bits: 8, value: -5, result: "11111011" };
+    let currentTwosDecode = { bits: 8, value: -5, result: "11111011" };
+    let currentTransfer = null;
+
+    function markSolved(id) {
+      solved.add(id);
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const total = 8;
+      const count = Math.min(solved.size, total);
+      const percent = Math.round((count / total) * 100);
+      document.getElementById('progressBar').style.width = percent + '%';
+      document.getElementById('progressText').textContent = `Fortschritt: ${count} von ${total} Übungen erledigt`;
+    }
+
+    function sanitizeBinary(input) {
+      return String(input).replace(/\s+/g, '');
+    }
+
+    function isBinaryString(str) {
+      return /^[01]+$/.test(str);
+    }
+
+    function toBinaryUnsigned(n) {
+      return Number(n).toString(2);
+    }
+
+    function padLeft(str, len) {
+      return str.padStart(len, '0');
+    }
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function convertDecimalToBinary() {
+      const input = Number(document.getElementById('decInput').value);
+      const box = document.getElementById('decResult');
+
+      if (!Number.isInteger(input) || input < 0 || input > 255) {
+        box.innerHTML = '<div class="mini-bad">Bitte eine ganze Zahl von 0 bis 255 eingeben.</div>';
+        return;
+      }
+
+      const binary = toBinaryUnsigned(input);
+      let rest = input;
+      const powers = [];
+      for (let value = 128; value >= 1; value /= 2) {
+        if (rest >= value) {
+          powers.push(value);
+          rest -= value;
+        }
+      }
+
+      box.innerHTML = `
+        <strong>Ergebnis:</strong> ${input}<sub>10</sub> = <span class="kbd">${binary}</span><sub>2</sub><br><br>
+        <strong>Zerlegung:</strong> ${powers.length ? powers.join(' + ') : '0'}<br>
+        <strong>Begründung:</strong> Setze genau die Stellen auf 1, deren Zweierpotenzen zusammen ${input} ergeben.
+      `;
+    }
+
+    function convertBinaryToDecimal() {
+      const raw = sanitizeBinary(document.getElementById('binInput').value);
+      const box = document.getElementById('binResult');
+
+      if (!isBinaryString(raw)) {
+        box.innerHTML = '<div class="mini-bad">Bitte nur 0 und 1 eingeben.</div>';
+        return;
+      }
+
+      const bits = raw.split('');
+      let sumText = [];
+      let value = 0;
+      for (let i = 0; i < bits.length; i++) {
+        const power = bits.length - 1 - i;
+        const contribution = Number(bits[i]) * (2 ** power);
+        value += contribution;
+        sumText.push(`${bits[i]}·2<sup>${power}</sup>${contribution ? ` = ${contribution}` : ''}`);
+      }
+
+      box.innerHTML = `
+        <strong>Ergebnis:</strong> <span class="kbd">${raw}</span><sub>2</sub> = ${value}<sub>10</sub><br><br>
+        <strong>Stellenwertrechnung:</strong><br>
+        ${sumText.join('<br>')}
+      `;
+    }
+
+    function newDecToBinExercise() {
+      currentDecToBin = randomInt(3, 63);
+      document.getElementById('exerciseDecToBin').innerHTML = `Wandle <strong>${currentDecToBin}<sub>10</sub></strong> in eine Dualzahl um.`;
+      document.getElementById('exerciseDecAnswer').value = '';
+      document.getElementById('exerciseDecFeedback').textContent = 'Gib deine Lösung ein und prüfe sie.';
+    }
+
+    function checkDecToBin() {
+      const answer = sanitizeBinary(document.getElementById('exerciseDecAnswer').value);
+      const correct = currentDecToBin.toString(2);
+      const box = document.getElementById('exerciseDecFeedback');
+
+      if (!isBinaryString(answer)) {
+        box.innerHTML = '<div class="mini-bad">Deine Eingabe ist keine gültige Dualzahl.</div>';
+        return;
+      }
+
+      if (answer === correct) {
+        box.innerHTML = `<div class="mini-good">Richtig. ${currentDecToBin}<sub>10</sub> = <span class="kbd">${correct}</span><sub>2</sub>.</div>`;
+        markSolved('decToBin');
+      } else {
+        box.innerHTML = `<div class="mini-warn">Noch nicht richtig. Denke in Zweierpotenzen. Richtige Lösung: <span class="kbd">${correct}</span>.</div>`;
+      }
+    }
+
+    function newBinToDecExercise() {
+      currentBinToDec = randomInt(4, 63).toString(2);
+      document.getElementById('exerciseBinToDec').innerHTML = `Wandle <strong><span class="kbd">${currentBinToDec}</span><sub>2</sub></strong> in eine Dezimalzahl um.`;
+      document.getElementById('exerciseBinAnswer').value = '';
+      document.getElementById('exerciseBinFeedback').textContent = 'Gib deine Lösung ein und prüfe sie.';
+    }
+
+    function checkBinToDec() {
+      const answer = Number(document.getElementById('exerciseBinAnswer').value);
+      const correct = parseInt(currentBinToDec, 2);
+      const box = document.getElementById('exerciseBinFeedback');
+
+      if (!Number.isInteger(answer)) {
+        box.innerHTML = '<div class="mini-bad">Bitte eine ganze Dezimalzahl eingeben.</div>';
+        return;
+      }
+
+      if (answer === correct) {
+        box.innerHTML = `<div class="mini-good">Richtig. <span class="kbd">${currentBinToDec}</span><sub>2</sub> = ${correct}<sub>10</sub>.</div>`;
+        markSolved('binToDec');
+      } else {
+        box.innerHTML = `<div class="mini-warn">Noch nicht richtig. Prüfe die Stellenwerte erneut. Richtige Lösung: ${correct}.</div>`;
+      }
+    }
+
+    function calculateAddition() {
+      const rawA = sanitizeBinary(document.getElementById('addA').value);
+      const rawB = sanitizeBinary(document.getElementById('addB').value);
+      const resultBox = document.getElementById('addResult');
+      const stepsBox = document.getElementById('additionSteps');
+
+      if (!isBinaryString(rawA) || !isBinaryString(rawB)) {
+        resultBox.innerHTML = '<div class="mini-bad">Bitte in beiden Feldern nur 0 und 1 eingeben.</div>';
+        stepsBox.innerHTML = 'Keine Analyse möglich.';
+        return;
+      }
+
+      const width = Math.max(rawA.length, rawB.length);
+      const a = padLeft(rawA, width);
+      const b = padLeft(rawB, width);
+      let carry = 0;
+      let result = '';
+      const rows = [];
+      let carryVisual = '';
+
+      for (let i = width - 1; i >= 0; i--) {
+        const bitA = Number(a[i]);
+        const bitB = Number(b[i]);
+        const carryIn = carry;
+        const sum = bitA + bitB + carryIn;
+        const outBit = sum % 2;
+        carry = sum >= 2 ? 1 : 0;
+        result = String(outBit) + result;
+        rows.push({ stelle: width - 1 - i, a: bitA, b: bitB, carryIn, outBit, carryOut: carry });
+        carryVisual = String(carryIn) + carryVisual;
+      }
+
+      const carryOut = carry;
+      const fullResult = carryOut ? '1' + result : result;
+      const decA = parseInt(a, 2);
+      const decB = parseInt(b, 2);
+      const decR = parseInt(fullResult, 2);
+
+      resultBox.innerHTML = `
+        <div class="equation">  ${carryOut ? '1' : ' '} ${carryVisual}\n    ${a}\n+   ${b}\n${'-'.repeat(width + 2)}\n  ${fullResult}</div>
+        <p><strong>Dezimal geprüft:</strong> ${decA} + ${decB} = ${decR}</p>
+      `;
+
+      let table = `
+        <table>
+          <thead>
+            <tr>
+              <th>Stelle von rechts</th>
+              <th>a</th>
+              <th>b</th>
+              <th>Übertrag rein</th>
+              <th>Ergebnisbit</th>
+              <th>Übertrag raus</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      for (const row of rows) {
+        table += `
+          <tr>
+            <td>${row.stelle}</td>
+            <td>${row.a}</td>
+            <td>${row.b}</td>
+            <td>${row.carryIn}</td>
+            <td>${row.outBit}</td>
+            <td>${row.carryOut}</td>
+          </tr>
+        `;
+      }
+
+      table += '</tbody></table>';
+      stepsBox.innerHTML = table;
+    }
+
+    function newAdditionExercise() {
+      const a = randomInt(2, 15);
+      const b = randomInt(2, 15);
+      currentAddA = padLeft(a.toString(2), 4);
+      currentAddB = padLeft(b.toString(2), 4);
+      document.getElementById('exerciseAddText').innerHTML = `Addiere <span class="kbd">${currentAddA}</span> und <span class="kbd">${currentAddB}</span>.`;
+      document.getElementById('exerciseAddAnswer').value = '';
+      document.getElementById('exerciseAddFeedback').textContent = 'Gib deine Lösung ein und prüfe sie.';
+    }
+
+    function checkAdditionExercise() {
+      const answer = sanitizeBinary(document.getElementById('exerciseAddAnswer').value);
+      const correct = (parseInt(currentAddA, 2) + parseInt(currentAddB, 2)).toString(2);
+      const box = document.getElementById('exerciseAddFeedback');
+
+      if (!isBinaryString(answer)) {
+        box.innerHTML = '<div class="mini-bad">Bitte nur 0 und 1 eingeben.</div>';
+        return;
+      }
+
+      if (answer === correct) {
+        box.innerHTML = `<div class="mini-good">Richtig. <span class="kbd">${currentAddA}</span> + <span class="kbd">${currentAddB}</span> = <span class="kbd">${correct}</span>.</div>`;
+        markSolved('addition');
+      } else {
+        box.innerHTML = `<div class="mini-warn">Noch nicht richtig. Achte besonders auf Überträge. Richtige Lösung: <span class="kbd">${correct}</span>.</div>`;
+      }
+    }
+
+    function twosRange(bits) {
+      return { min: -(2 ** (bits - 1)), max: (2 ** (bits - 1)) - 1 };
+    }
+
+    function toTwosComplement(value, bits) {
+      if (value >= 0) {
+        return padLeft(value.toString(2), bits);
+      }
+      return ((2 ** bits) + value).toString(2).slice(-bits).padStart(bits, '0');
+    }
+
+    function fromTwosComplement(binary, bits) {
+      const unsigned = parseInt(binary, 2);
+      if (binary[0] === '0') return unsigned;
+      return unsigned - (2 ** bits);
+    }
+
+    function convertDecimalToTwos() {
+      const bits = Number(document.getElementById('twosBits').value);
+      const value = Number(document.getElementById('twosDec').value);
+      const box = document.getElementById('twosDecResult');
+      const range = twosRange(bits);
+
+      if (!Number.isInteger(value) || value < range.min || value > range.max) {
+        box.innerHTML = `<div class="mini-bad">Für ${bits} Bit sind nur Werte von ${range.min} bis ${range.max} möglich.</div>`;
+        return;
+      }
+
+      const result = toTwosComplement(value, bits);
+
+      if (value >= 0) {
+        box.innerHTML = `
+          <strong>Ergebnis:</strong> ${value}<sub>10</sub> = <span class="kbd">${result}</span> (${bits} Bit)<br><br>
+          <strong>Hinweis:</strong> Positive Zahlen werden direkt als Binärzahl mit führenden Nullen dargestellt.
+        `;
+        return;
+      }
+
+      const positive = padLeft(Math.abs(value).toString(2), bits);
+      const inverted = positive.split('').map(bit => bit === '0' ? '1' : '0').join('');
+      const plusOne = toTwosComplement(value, bits);
+
+      box.innerHTML = `
+        <strong>Ergebnis:</strong> ${value}<sub>10</sub> = <span class="kbd">${result}</span> (${bits} Bit)<br><br>
+        <strong>Schritte:</strong><br>
+        Betrag ${Math.abs(value)} → <span class="kbd">${positive}</span><br>
+        invertieren → <span class="kbd">${inverted}</span><br>
+        +1 → <span class="kbd">${plusOne}</span>
+      `;
+    }
+
+    function convertTwosToDecimal() {
+      const bits = Number(document.getElementById('twosBinBits').value);
+      const raw = sanitizeBinary(document.getElementById('twosBin').value);
+      const box = document.getElementById('twosBinResult');
+
+      if (!isBinaryString(raw) || raw.length !== bits) {
+        box.innerHTML = `<div class="mini-bad">Bitte genau ${bits} Bits eingeben.</div>`;
+        return;
+      }
+
+      const value = fromTwosComplement(raw, bits);
+      if (raw[0] === '0') {
+        box.innerHTML = `
+          <strong>MSB ist 0:</strong> Die Zahl ist nicht negativ.<br>
+          <strong>Ergebnis:</strong> <span class="kbd">${raw}</span> = ${value}<sub>10</sub>
+        `;
+      } else {
+        const inverted = raw.split('').map(bit => bit === '0' ? '1' : '0').join('');
+        const magnitude = parseInt(inverted, 2) + 1;
+        box.innerHTML = `
+          <strong>MSB ist 1:</strong> Die Zahl ist negativ.<br>
+          invertieren → <span class="kbd">${inverted}</span><br>
+          +1 → ${padLeft(magnitude.toString(2), bits)} = ${magnitude}<sub>10</sub><br>
+          <strong>Ergebnis:</strong> <span class="kbd">${raw}</span> = ${value}<sub>10</sub>
+        `;
+      }
+    }
+
+    function newTwosEncodeExercise() {
+      const bits = Math.random() < 0.5 ? 4 : 8;
+      const range = twosRange(bits);
+      const value = randomInt(range.min + 1, range.max);
+      currentTwosEncode = { bits, value, result: toTwosComplement(value, bits) };
+      document.getElementById('exerciseTwosEncodeText').innerHTML = `Stelle <strong>${value}<sub>10</sub></strong> als <strong>${bits}-Bit-2er-Komplement</strong> dar.`;
+      document.getElementById('exerciseTwosEncodeAnswer').value = '';
+      document.getElementById('exerciseTwosEncodeFeedback').textContent = 'Gib deine Lösung ein und prüfe sie.';
+    }
+
+    function checkTwosEncode() {
+      const answer = sanitizeBinary(document.getElementById('exerciseTwosEncodeAnswer').value);
+      const box = document.getElementById('exerciseTwosEncodeFeedback');
+      if (!isBinaryString(answer) || answer.length !== currentTwosEncode.bits) {
+        box.innerHTML = `<div class="mini-bad">Bitte genau ${currentTwosEncode.bits} Bits eingeben.</div>`;
+        return;
+      }
+
+      if (answer === currentTwosEncode.result) {
+        box.innerHTML = `<div class="mini-good">Richtig. ${currentTwosEncode.value}<sub>10</sub> entspricht <span class="kbd">${currentTwosEncode.result}</span>.</div>`;
+        markSolved('twosEncode');
+      } else {
+        box.innerHTML = `<div class="mini-warn">Noch nicht richtig. Richtige Lösung: <span class="kbd">${currentTwosEncode.result}</span>.</div>`;
+      }
+    }
+
+    function newTwosDecodeExercise() {
+      const bits = Math.random() < 0.5 ? 4 : 8;
+      const range = twosRange(bits);
+      const value = randomInt(range.min, range.max);
+      const result = toTwosComplement(value, bits);
+      currentTwosDecode = { bits, value, result };
+      document.getElementById('exerciseTwosDecodeText').innerHTML = `Welchen Dezimalwert hat <strong><span class="kbd">${result}</span></strong> im <strong>${bits}-Bit-2er-Komplement</strong>?`;
+      document.getElementById('exerciseTwosDecodeAnswer').value = '';
+      document.getElementById('exerciseTwosDecodeFeedback').textContent = 'Gib deine Lösung ein und prüfe sie.';
+    }
+
+    function checkTwosDecode() {
+      const answer = Number(document.getElementById('exerciseTwosDecodeAnswer').value);
+      const box = document.getElementById('exerciseTwosDecodeFeedback');
+      if (!Number.isInteger(answer)) {
+        box.innerHTML = '<div class="mini-bad">Bitte eine ganze Zahl eingeben.</div>';
+        return;
+      }
+
+      if (answer === currentTwosDecode.value) {
+        box.innerHTML = `<div class="mini-good">Richtig. <span class="kbd">${currentTwosDecode.result}</span> entspricht ${currentTwosDecode.value}<sub>10</sub>.</div>`;
+        markSolved('twosDecode');
+      } else {
+        box.innerHTML = `<div class="mini-warn">Noch nicht richtig. Richtige Lösung: ${currentTwosDecode.value}.</div>`;
+      }
+    }
+
+    function newTransferTask() {
+      const variants = [];
+
+      const dec = randomInt(10, 40);
+      variants.push({
+        text: `Ein Sensor liefert den Dezimalwert <strong>${dec}</strong>. Wandle ihn in eine Dualzahl um.`,
+        answer: dec.toString(2),
+        hint: 'Suche die passenden Zweierpotenzen.'
+      });
+
+      const a = randomInt(4, 12), b = randomInt(3, 12);
+      variants.push({
+        text: `Ein 4-Bit-System soll <span class="kbd">${padLeft(a.toString(2),4)}</span> und <span class="kbd">${padLeft(b.toString(2),4)}</span> addieren. Wie lautet das Ergebnis?`,
+        answer: (a + b).toString(2),
+        hint: 'Arbeite von rechts nach links und beachte Überträge.'
+      });
+
+      const bits = 8;
+      const signed = randomInt(-20, -2);
+      variants.push({
+        text: `Ein Rechner speichert die Zahl <strong>${signed}</strong> im ${bits}-Bit-2er-Komplement. Wie lautet das Bitmuster?`,
+        answer: toTwosComplement(signed, bits),
+        hint: 'Betrag bilden, invertieren, +1.'
+      });
+
+      const decodeValue = randomInt(-15, 15);
+      const decodeBits = 8;
+      const pattern = toTwosComplement(decodeValue, decodeBits);
+      variants.push({
+        text: `Ein Datenwort lautet <span class="kbd">${pattern}</span>. Interpretiere es als ${decodeBits}-Bit-2er-Komplement und gib den Dezimalwert an.`,
+        answer: String(decodeValue),
+        hint: 'Prüfe zuerst das höchste Bit.'
+      });
+
+      currentTransfer = variants[randomInt(0, variants.length - 1)];
+      document.getElementById('transferTaskText').innerHTML = currentTransfer.text;
+      document.getElementById('transferAnswer').value = '';
+      document.getElementById('transferFeedback').textContent = 'Löse die Aufgabe möglichst ohne Hilfsmittel.';
+    }
+
+    function checkTransferTask() {
+      const answer = sanitizeBinary(document.getElementById('transferAnswer').value.trim());
+      const box = document.getElementById('transferFeedback');
+      if (!currentTransfer) return;
+
+      const rawAnswer = document.getElementById('transferAnswer').value.trim().replace(/\s+/g, '');
+      const correct = String(currentTransfer.answer);
+
+      if (rawAnswer === correct) {
+        box.innerHTML = `<div class="mini-good">Richtig. Genau so soll das Verfahren auf neue Aufgaben übertragen werden.</div>`;
+        markSolved('transfer');
+      } else {
+        box.innerHTML = `<div class="mini-warn">Noch nicht richtig. Hinweis: ${currentTransfer.hint}<br>Richtige Lösung: <span class="kbd">${correct}</span></div>`;
+      }
+    }
+
+    function evaluateFinalReflection() {
+      const q1 = document.getElementById('finalQ1').value.trim();
+      const q2 = document.getElementById('finalQ2').value.trim();
+      const q3 = document.getElementById('finalQ3').value.trim();
+      const box = document.getElementById('finalReflection');
+
+      let score = 0;
+      const q1ok = /kontext|vorzeichen|unsigned|signed|bedeut/i.test(q1);
+      const q2ok = /1\s*\+\s*1|übertrag|summe.*2|mindestens 2/i.test(q2);
+      const q3ok = /subtraktion|addition|einheitlich|rechner|hardware/i.test(q3);
+      if (q1ok) score++;
+      if (q2ok) score++;
+      if (q3ok) score++;
+
+      if (score === 3) {
+        box.innerHTML = '<div class="mini-good">Sehr gut. Deine Antworten zeigen, dass du die Konzepte nicht nur anwenden, sondern auch begründen kannst.</div>';
+        markSolved('reflection');
+      } else {
+        box.innerHTML = `
+          <div class="mini-warn">
+            Dein Selbstcheck ist noch nicht vollständig überzeugend. Achte auf diese Kernideen:<br><br>
+            <strong>1.</strong> Dasselbe Bitmuster kann je nach Kontext unsigned, signed oder als 2er-Komplement etwas anderes bedeuten.<br>
+            <strong>2.</strong> Ein Übertrag entsteht, wenn die Summe einer Stelle mindestens 2 ist.<br>
+            <strong>3.</strong> Das 2er-Komplement ist praktisch, weil Rechner Addition und Subtraktion mit ähnlicher Hardware verarbeiten können.
+          </div>
+        `;
+      }
+    }
+
+    function init() {
+      updateProgress();
+      convertDecimalToBinary();
+      convertBinaryToDecimal();
+      calculateAddition();
+      convertDecimalToTwos();
+      convertTwosToDecimal();
+      newDecToBinExercise();
+      newBinToDecExercise();
+      newAdditionExercise();
+      newTwosEncodeExercise();
+      newTwosDecodeExercise();
+      newTransferTask();
+    }
+
+    init();
+  </script></body>
+</html>
